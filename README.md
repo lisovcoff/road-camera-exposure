@@ -131,6 +131,7 @@ Picamera2, libcamera и IMX708. Их запуск
 Состояние ядра: [v0.2](docs/stage-02-core-v02.md).
 Подготовка наблюдателя: [Module 3 и переход к видеопотоку](docs/stage-05-picamera-observer.md).
 Первый реальный запуск: [30 наблюдений, ограничения света и следующие проверки](docs/stage-06-module3-observation.md).
+Ручные настройки: [измеренные значения и задержка применения](docs/stage-07-control-readback.md).
 
 ## Условия использования
 
