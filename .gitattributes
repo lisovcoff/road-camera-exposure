@@ -1,0 +1,3 @@
+* text=auto eol=lf
+# Preserve historical sources byte-for-byte, including original line endings.
+code/*.py -text

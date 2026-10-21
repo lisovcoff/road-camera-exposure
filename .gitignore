@@ -1,0 +1,26 @@
+# Local handoff, connection details and original experiments
+/AGENTS.md
+/PROJECT_CONTEXT.md
+/PROMPT_FOR_CODEX.md
+/README_FIRST.md
+/examples/
+/backups/
+/data/
+/runs/
+/.venv/
+/.env
+/.env.*
+/.ssh/
+id_ed25519*
+*.pem
+*.key
+*.zip
+*.raw
+*.dng
+*.jpg
+*.jpeg
+*.mp4
+*.h264
+__pycache__/
+*.py[cod]
+.pytest_cache/
