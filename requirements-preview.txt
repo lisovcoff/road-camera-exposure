@@ -1,0 +1,3 @@
+# Optional local dataset previews only; no automatic installation.
+numpy>=1.24,<3
+Pillow>=10,<13
