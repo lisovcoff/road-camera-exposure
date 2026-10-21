@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "purpose": "module3_lab_observation_only",
+  "roi_source": "new_provisional_laboratory_grid_NOT_dashcam_dataset",
+  "road_calibrated": false,
+  "transform": "identity",
+  "main_size": [1920, 1080],
+  "lores_size": [320, 180],
+  "requested_fps": 30,
+  "sensor": {"output_size": [2304, 1296], "bit_depth": 10},
+  "duration_s": 15,
+  "sample_period_s": 0.5,
+  "capture_timeout_s": 2,
+  "max_output_bytes": 20000000,
+  "reserve_bytes": 1000000000,
+  "snapshot_max_bytes": 3000000,
+  "snapshot_at_s": [0, 7, 14],
+  "simulated_speed_kmh": 8,
+  "diagnostic_analysis": {"dark_y": 32, "clipped_y": 235, "metering_percentile": 50, "min_zone_pixels": 16},
+  "laboratory_metering_rectangle": [0.15, 0.25, 0.85, 0.75],
+  "policy": {
+    "version": "pi-observer-lab-001-NOT-calibrated",
+    "detect": {"min_exposure_us": 100, "max_exposure_us": 4000, "preferred_exposure_us": 4000, "target_y": 100, "band_fraction": 0.15},
+    "view": {"min_exposure_us": 100, "max_exposure_us": 12000, "preferred_exposure_us": 8000, "target_y": 105, "band_fraction": 0.15},
+    "enter_detect_kmh": 9,
+    "enter_view_kmh": 11,
+    "mode_dwell_ns": 2000000000,
+    "status_dwell_ns": 200000000,
+    "max_speed_age_ns": 1000000000,
+    "max_frame_age_ns": 500000000,
+    "command_timeout_ns": 1000000000,
+    "min_response": 0.8,
+    "max_response": 1.25,
+    "highlight_pct": 1
+  },
+  "warnings": [
+    "Not approved for vehicle operation; no masks, optics or exposure settings transferred from dashcam.",
+    "Camera-native AE/AF and configuration defaults remain in charge; recommendations are never dispatched.",
+    "Readback tolerance is zero pending sensor quantization calibration; saturation flags are preliminary.",
+    "Sensor HDR state is not explicitly set or assumed verified. Normal Picamera2 timestamp semantics require hardware validation.",
+    "30 fps is a requested stream configuration, not proof of encoding, transport or inference throughput."
+  ]
+}
