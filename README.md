@@ -144,6 +144,7 @@ Picamera2, libcamera и IMX708. Их запуск
 Замкнутая регулировка: [18 из 18 команд подтверждены на IMX708](docs/stage-10-closed-loop.md).
 Кодирование: [измерения H.264 и MJPEG 1080p](docs/stage-11-encoding.md).
 Совместная работа: [регулятор и оба кодировщика](docs/stage-12-encoded-loop.md).
+Подготовка фокуса: [проверка попадания мишеней в кадр](docs/stage-13-target-scene-preflight.md).
 
 ## Условия использования
 
