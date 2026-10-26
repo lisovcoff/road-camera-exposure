@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "road-camera-exposure"
+version = "0.1.0"
+description = "Experimental motion-aware shutter control with native camera gain"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "lisovcoff"}]
+dependencies = ["numpy>=1.24,<3"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Image Processing",
+]
+
+[project.optional-dependencies]
+analysis = ["matplotlib>=3.7", "Pillow>=9"]
+
+[project.scripts]
+roadcam = "road_camera_exposure.cli:main"
+
+[project.urls]
+Repository = "https://github.com/lisovcoff/road-camera-exposure"
+Issues = "https://github.com/lisovcoff/road-camera-exposure/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]

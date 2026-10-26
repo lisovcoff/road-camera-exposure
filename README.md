@@ -1,157 +1,90 @@
 # Road Camera Exposure
 
-Алгоритм настройки движущейся камеры для получения различимого, детального
-изображения дороги: выдержка, усиление, фокус и обоснованная настройка остальных
-доступных параметров. Рабочая геометрия: камера примерно в 1,5 м над асфальтом,
-дальняя граница около **4,5 м от передней части машины**, охват примерно двух
-полос. Точная ширина в метрах, положение камеры относительно передней части и
-ближняя граница требуют измерения. Двухполосный охват остаётся требованием;
-скрытой замены более узкой зоной нет.
+[Русский](README.ru.md) · English
 
-Основной вопрос — как сохранять детали при движении, меняющемся свете и
-освещении фарами, ограничивая смаз, шум, пересветы и задержку. Нейросеть
-остаётся внешним потребителем кадров; её разработка и обучение не входят в
-текущий объём работ. При физическом недостатке света или разрешения камера
-должна сообщать об ограничении качества; гарантии идеального изображения во
-всех условиях нет.
+Experimental motion-aware shutter control for Raspberry Pi. The controller shortens exposure when a tracked target moves, then restores native auto exposure after it stops. Native gain remains active. Live preview is **colour**; tracking uses luminance.
 
-Сейчас доступны независимое ядро v0.2, воспроизводимый офлайн-аудит и
-ограниченные опыты Picamera2. На IMX708 проверены фактическое применение
-выдержки/gain и совместная работа регулятора с кодированием H.264/MJPEG
-1920×1080 примерно при 30 видеопакетах/с в короткой лабораторной серии.
-Это ранний прототип: дорожная область
-интереса, пороги яркости и рабочая выдержка ещё не откалиброваны. Нейросети,
-производственного видеосервиса и подтверждённой детекции сантиметрового мусора здесь нет.
-Система не предназначена для критичного к безопасности управления машиной.
-Уже реализованы основы управления выдержкой и усилением; управление фокусом
-и калибровка оптики на машине ещё впереди. Изучены 200 дневных/ночных дорожных
-кадров с предполагаемого места установки:
-[выводы и уточнённый план](docs/stage-03-road-scenes.md).
-Подготовлены [предварительные маски и их визуальная проверка](docs/stage-04-metering-masks.md).
-Эти датасеты сняты **другим устройством — обычным регистратором**, по сообщению
-пользователя примерно раз в 5 секунд. Их оптика и параметры не переносятся на
-Camera Module 3. Новый [наблюдающий адаптер](docs/stage-05-picamera-observer.md)
-использует отдельную предварительную лабораторную сетку. Цель аппаратной ветки —
-непрерывное потоковое видео. Кодирование в локальный sink измерено;
-добавлена [локальная MJPEG-трансляция с регулятором](docs/stage-15-local-live.md),
-проверенная коротким приёмом 1080p по Wi-Fi-адресу. Переключение света на
-подготовленной сцене и длительная стабильность ещё требуют проверки.
-Практический порядок запусков и подготовка дорожной сцены:
-[аппаратное руководство](docs/hardware-workflow.md).
+[![Target comparison](assets/results/demo-poster.png)](assets/results/target-motion.mp4)
 
-## Запуск без камеры
+[Watch video](assets/results/target-motion.mp4) · [Media gallery](assets/results/index.html) · [Method and limitations](docs/results.md)
 
-Нужны Python 3.10+ и NumPy. Реально проверены Windows, Python 3.14.3 и NumPy
-2.4.6; другие версии пока не проверялись. Зависимость указана в
-`requirements-offline.txt`. Скрипты не устанавливают пакеты, не скачивают данные
-и не подключаются к оборудованию.
+## Measured result
 
-Из корня проекта в Windows PowerShell:
+![Line width](assets/results/line-width.png)
 
-```powershell
-python -B -m unittest discover -s tests -p 'test_*.py' -v
-python -B tools/simulate_v02_001.py
-python -B code/road_pi_observe_v01.py
+| Mode | Actual moving exposure | Median line width | Frames at 150–250 px/s |
+| --- | --- | --- | --- |
+| Native Short | 32.680 ms | 5.50 px | 117 |
+| Native Normal | 32.680 ms | 6.375 px | 100 |
+| Fixed 4 ms + native gain | 3.981 ms | 3.00 px | 60 |
+| Adaptive + native gain | 2.779–7.989 ms | 4.00 px | 69 |
+
+Adaptive control produced a line **27.3% narrower than Native Short and 37.3% narrower than Native Normal** in the common speed band. Fixed 4 ms was sharper during motion. Adaptive restored native 32.680 ms exposure at rest. This was one sequential indoor trial per mode with hand motion and correlated frames. It does not establish statistical significance, road performance or improved detection. Whiskers are frame quartiles, not confidence intervals.
+
+## Included and supported
+
+- Independent NumPy tracker, shutter policy and command/readback gate.
+- Picamera2 IMX708 adapter, colour MJPEG crop preview, bounded validation capture.
+- Configuration, measured AWB reference, actual metadata, offline analysis and tests.
+
+The original runtime was tested on **Pi 5 + Camera Module 3 Standard / IMX708**. The reorganized package has offline and mocked camera tests; its first real hardware run remains to be checked. Other cameras require an adapter. Road-wide motion, trash detection and automatic road calibration are not implemented.
+
+## Try without a camera
+
+Python 3.10+, commands from the repository root:
+
+```sh
+python -m venv .venv
+source .venv/bin/activate
+# Windows PowerShell instead: .\.venv\Scripts\Activate.ps1
+python -m pip install -e .
+roadcam simulate
+roadcam run --config configs/module3.example.json
+python -m unittest discover -s tests -v
 ```
 
-Ожидается 117 проверок: 113 успешных и 4 ожидаемых падения старой v0.1.
-Они охватывают ядро, маски, наблюдатель, калибровку и ограниченные адаптеры
-с имитаторами камеры/кодировщика. Синтетический опыт выводит
-переходы DIM → BRIGHT → DIM и итог `frames=60 commands=8`; это модель с
-линейной яркостью, задержкой в два шага и квантованием, а не дорожный тест.
-Третья команда — dry-run: выводит `camera_started: false`, не импортирует
-Picamera2 и не создаёт файлов. Команды завершаются с кодом 0. Детали API и ограничений:
-[этап 2](docs/stage-02-core-v02.md).
+The `run` command above validates configuration without opening a camera. Simulation checks synthetic feedback, not image quality.
 
-Аудит исторического контроллера выполняется отдельно:
+## Raspberry Pi and other cameras
 
-```powershell
-python -B tools/audit_v01_001.py
+Follow the [installation guide](docs/installation.md), then capture a reference and adjust the generated configuration to your scene:
+
+```sh
+roadcam inspect
+mkdir -p runs
+roadcam reference --config configs/module3.example.json --output runs/reference --run-camera
+roadcam run --config runs/reference/config.json
+roadcam run --config runs/reference/config.json --output runs/demo-001 --run-camera --allow-lab
 ```
 
-Ожидаемый отчёт:
+Default preview: <http://127.0.0.1:8000/> on the Pi. The guide explains access from a trusted LAN; no authentication or TLS is provided. The example target rectangle is illustrative and must be positioned over a textured target.
 
-```text
-auto_controller: 48 rows; exact replay 47/48; boundary-probe mismatches=0
-  analysis median/max: 1.4045/30.788 ms
-  MISMATCH line 17 at 8.001 s
-light_response: 48 rows; exact replay 48/48; boundary-probe mismatches=0
-  analysis median/max: 1.3325/1.570 ms
-```
+For another camera, see the [integration guide](docs/camera-adapters.md) and [SDK template](examples/custom_camera.py). CLI currently supports only IMX708. A new backend needs actual controls, unit conversion, timestamps and readback validation. An RTSP URL alone does not supply exposure control.
 
-**Код завершения аудита — 1:** сохранённое округлённое время не позволяет точно
-повторить один переход режима. Аудит намеренно сообщает об этом. Значение 0
-означает точное совпадение всех решений, 2 — ошибку чтения или структуры входа.
-Диагностическая поправка времени не изменяет журнал и не доказывает исходное
-точное время события.
+## Resource cost
 
-Исторические 11 проверок v0.1 сохранены: 7 успешных и 4 ожидаемых падения
-(`expected failures`). Дефекты исправлены в новом ядре, старый исходник
-сохранён для сравнения. Подробности: [результаты этапа 1](docs/stage-01-audit.md).
+![CPU cost](assets/results/cpu-cost.png)
 
-На Linux выполняются те же команды с `python3` вместо `python`. Для машинного
-чтения отчёта предусмотрен `--json`. Исходные локальные опыты можно проверить
-через `--examples examples`, если этот каталог имеется: ожидаются подкаталоги
-`auto_controller` и `light_response`, каждый с `measurements.jsonl`.
+On the measured Pi 5, isolated tracking/policy at 8.3 evaluations/s used **16.4% of one core**, approximately 4.1% of four-core capacity. Mean call: 15.54 ms. Capture, ISP, JPEG and HTTP excluded.
 
-## Что находится в репозитории
+| Scope | Measured cost |
+| --- | --- |
+| Algorithm with Python/NumPy | 28–29 MiB; approximately 5–6 MiB above baseline |
+| Complete colour/web process | 94.97 MiB RSS; 96.92 MiB peak |
+| Algorithm alone | One OS thread, zero video encoders/decoders, no GPU/NPU |
 
-| Путь | Назначение |
-|---|---|
-| `code/road_core_v01.py` | Независимые от камеры статистика яркости и исходный регулятор |
-| `code/road_core_v02.py` | Проверяемые маски, политика и жизненный цикл команд без аппаратных зависимостей |
-| `code/road_masks_v01.py` | Построение предварительных зон измерения из нормированных полигонов |
-| `code/road_observer_v01.py` | Рекомендации без отправки, проверка YUV/метаданных и бюджет записи |
-| `code/road_pi_observe_v01.py` | Наблюдающий Picamera2-адаптер; по умолчанию только dry-run |
-| `code/road_pi_controls_v02.py` | Расширенная серия измерения фактической выдержки/gain и задержки |
-| `code/road_pi_loop_v02.py` | Ограниченный лабораторный замкнутый регулятор с проверкой калибровки |
-| `code/road_pi_encode_v01.py` | H.264/MJPEG в ограниченный sink, отдельно или с регулятором |
-| `code/road_pi_focus_v01.py` | Ограниченные серии фокуса/выдержек с явной областью измерения |
-| `configs/pi_observer_lab_v01.json` | Ограниченный лабораторный опыт, отдельный от регистратора |
-| `configs/road_roi_candidate_v01.json` | Некалиброванные варианты для визуальной проверки, без автоматического выбора |
-| `code/road_pi_v01.py` | Исторический 24-секундный опыт с симулированной скоростью |
-| `code/road_light_v01.py` | Исторический 24-секундный опыт с ручным переключением лампы |
-| `tools/audit_v01_001.py` | Повторный расчёт решений по записанной обратной связи |
-| `tools/simulate_v02_001.py` | Синтетическая обратная связь с задержкой и квантованием |
-| `tools/preview_road_roi_v01.py` | Локальные наложения и статистика зон на JPEG из ZIP |
-| `tests/` | Проверки поведения, известных дефектов и происхождения данных |
-| `tests/fixtures/v01/` | 96 записей численных измерений без фотографий и параметров подключения |
-| `docs/related-work.md` | Похожие работы, ограничения и идеи для сравнительных опытов |
+Kernel/ISP buffers may fall outside RSS. Short measurements are not worst-case latency or long-term leak tests. [Measurement scope](docs/results.md).
 
-В данных сохранены фактические выдержка и усиление, статистика, записанные
-решения и длительность анализа. Файл `provenance.json` содержит SHA-256
-исходных журналов и включённых выборок. Полные локальные журналы и фотографии
-сохраняются отдельно; офлайн-проверки в свежем клоне от них не зависят.
+## Documentation
 
-## Переход к своей камере
+- [Installation](docs/installation.md)
+- [Other cameras](docs/camera-adapters.md)
+- [Architecture](docs/architecture.md)
+- [Results](docs/results.md)
+- [Troubleshooting](docs/troubleshooting.md)
+- [Development and reproducibility](docs/development.md)
+- [Primary references](docs/references.md)
 
-Сначала определите ширину дорожной зоны, положение камеры, размеры объектов
-после подготовки входа нейросети и допустимую задержку. Измеряйте смаз в
-пикселях вместе с качеством обнаружения. Выдержка 4 мс и целевая медиана 100
-в v0.1 — параметры домашнего опыта, а не готовая настройка для дороги.
+Next validation requires repeated randomized trials, road motion, changing light and detector accuracy measurements. This experimental toolkit is not a safety-critical navigation component.
 
-Исторические `road_pi_v01.py` и `road_light_v01.py` требуют Raspberry Pi,
-Picamera2, libcamera и IMX708. Их запуск
-**управляет камерой, выключает sensor HDR и сохраняет новые файлы**. Поэтому
-они не входят в быстрый старт. Путь сохранения — `~/camera_tests`, длительность
-— 24 с, до четырёх JPEG плюс JSON; перед запуском проверяется минимум 1 ГБ
-свободного места. Проверка закрытия камеры в реальном сбое на этом этапе не
-проводилась. Развёртывание и новый аппаратный опыт требуют отдельной подготовки.
-
-Состояние ядра: [v0.2](docs/stage-02-core-v02.md).
-Подготовка наблюдателя: [Module 3 и переход к видеопотоку](docs/stage-05-picamera-observer.md).
-Первый реальный запуск: [30 наблюдений, ограничения света и следующие проверки](docs/stage-06-module3-observation.md).
-Ручные настройки: [измеренные значения и задержка применения](docs/stage-07-control-readback.md).
-Первый замкнутый опыт: [остановка на промежуточном значении выдержки](docs/stage-08-loop-first-attempt.md).
-Расширенные измерения: [промежуточная выдержка и дробное усиление](docs/stage-09-expanded-controls.md).
-Замкнутая регулировка: [18 из 18 команд подтверждены на IMX708](docs/stage-10-closed-loop.md).
-Кодирование: [измерения H.264 и MJPEG 1080p](docs/stage-11-encoding.md).
-Совместная работа: [регулятор и оба кодировщика](docs/stage-12-encoded-loop.md).
-Подготовка фокуса: [проверка попадания мишеней в кадр](docs/stage-13-target-scene-preflight.md).
-Первая серия мишеней: [фокус, выдержка и ограничения неподвижности](docs/stage-14-stationary-focus.md).
-
-## Условия использования
-
-Код, документация и численные тестовые выборки доступны по [лицензии MIT](LICENSE).
-Сторонние работы приведены ссылками; их код и данные сюда не включены и имеют
-собственные условия использования.
+[MIT license](LICENSE).

@@ -1,9 +1,10 @@
 # Local handoff, connection details and original experiments
 /AGENTS.md
 /PROJECT_CONTEXT.md
-/PROMPT_FOR_CODEX.md
+/PROMPT*.md
 /README_FIRST.md
-/examples/
+/examples/*
+!/examples/custom_camera.py
 /backups/
 /data/
 /runs/
@@ -20,7 +21,11 @@ id_ed25519*
 *.jpg
 *.jpeg
 *.mp4
+!/assets/results/*.mp4
 *.h264
 __pycache__/
 *.py[cod]
 .pytest_cache/
+*.egg-info/
+/build/
+/dist/

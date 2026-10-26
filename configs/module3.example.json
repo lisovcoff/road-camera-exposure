@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "driver": "picamera2-imx708",
+  "camera_index": 0,
+  "roi": [640, 360, 1280, 720],
+  "tracking_rectangle": [220, 90, 420, 255],
+  "lens": 0.0,
+  "colour_gains": null,
+  "rotate_preview": false,
+  "bind": "127.0.0.1",
+  "port": 8000,
+  "duration_s": 3600,
+  "preview_quality": 85,
+  "session_bytes": 60000000,
+  "validation_bytes": 160000000,
+  "reserve_bytes": 1000000000
+}

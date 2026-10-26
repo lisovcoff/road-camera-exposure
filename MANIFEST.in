@@ -1,0 +1,7 @@
+include LICENSE README.md README.ru.md
+recursive-include configs *.json
+recursive-include docs *.md
+recursive-include assets/results *.json *.png *.svg *.mp4 *.html
+include assets/results/README.md assets/results/SHA256SUMS
+recursive-include tests *.py
+include examples/custom_camera.py tools/render_results.py

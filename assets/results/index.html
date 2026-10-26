@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Road Camera Exposure — Results / Результаты</title>
+<style>body{font:17px/1.6 system-ui,sans-serif;margin:32px auto;max-width:1080px;padding:0 20px;background:#111827;color:#e5e7eb}a{color:#93c5fd}video,img{width:100%;height:auto;border-radius:10px;background:white}section{margin:36px 0}h1,h2{line-height:1.2}</style>
+<h1>Road Camera Exposure</h1><p>Target experiment / Опыт на мишени</p>
+<p><a href="../../README.md">English</a> · <a href="../../README.ru.md">Русский</a> · <a href="measurements.json">Data / Данные</a></p>
+<section><h2>Four modes / Четыре режима</h2><video controls preload="metadata" poster="demo-poster.png"><source src="target-motion.mp4" type="video/mp4">Open target-motion.mp4</video>
+<p>Actual luminance. Separate recordings aligned by movement onset; speeds differ. / Реальная яркость. Отдельные записи совмещены по началу движения; скорости различаются.</p></section>
+<section><h2>Line width / Ширина линии</h2><img src="line-width.png" alt="Median line width and frame quartiles"><p>Adaptive: −27.3% vs Short, −37.3% vs Normal in the common speed band. Fixed 4 ms was sharper in motion. One trial per mode. / Адаптивный: −27,3% к Short, −37,3% к Normal в общем диапазоне скоростей. Постоянные 4 мс резче в движении. Один опыт на режим.</p></section>
+<section><h2>CPU cost / Нагрузка CPU</h2><img src="cpu-cost.png" alt="Isolated algorithm CPU"><p>Capture, ISP, JPEG, HTTP excluded. / Захват, ISP, JPEG и HTTP исключены.</p></section>
+<p><a href="../../docs/results.md">Method and limitations</a> · <a href="../../docs/results.ru.md">Методика и ограничения</a> · <a href="README.md">Files / Файлы</a></p>
+<p>Indoor experiment; road detection not validated. / Комнатный опыт; дорожная детекция не проверена.</p></html>

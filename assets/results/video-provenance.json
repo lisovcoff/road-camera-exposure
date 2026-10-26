@@ -1,0 +1,35 @@
+{
+  "scope": "privacy-cropped experimental footage, not a full-scene or simulated video",
+  "duration_s": 5,
+  "fps": 15,
+  "display_range": [
+    0,
+    255
+  ],
+  "geometric_registration": true,
+  "brightness_adjustment": false,
+  "sensor_timestamps_used": true,
+  "alignment": "0.8s before first three eligible frames above 50px/s after 0.7s",
+  "sources": [
+    {
+      "mode": "Native Short",
+      "start_s": 0.36626500000000006,
+      "source_metadata_sha256": "f04b81948f35272adae7be0509d8e64ad991b8690d61f2605d806c1ce11b9e1c"
+    },
+    {
+      "mode": "Native Normal",
+      "start_s": 0.3329439999999999,
+      "source_metadata_sha256": "bf440e9d06732f348d2aeeb58386aac9ece253c7359e01a23138bacbca1f135b"
+    },
+    {
+      "mode": "Fixed 4 ms + native gain",
+      "start_s": 0.19965599999999994,
+      "source_metadata_sha256": "b08120bf1dc36d62c9e53a9354e9ba229b259905ebe2c73eb66d730bf4f77f2a"
+    },
+    {
+      "mode": "Adaptive + native gain",
+      "start_s": 3.765027,
+      "source_metadata_sha256": "7a89fb33f44f15b795612c58733fb1487c9a505086edb9ad01205e0a652082c4"
+    }
+  ]
+}

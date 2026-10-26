@@ -1,2 +1,0 @@
-# Offline analysis and tests only. Installation is a separate user action.
-numpy>=1.24,<3
